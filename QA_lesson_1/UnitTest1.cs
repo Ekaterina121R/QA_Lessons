@@ -6,10 +6,10 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
 
-namespace QA_lesson_1
+namespace QA_lesson_2
 {
     [TestFixture]
-    public class MyFirstTest
+    public class MySecondTest
     {
         private IWebDriver driver;
         private WebDriverWait wait;
@@ -24,8 +24,11 @@ namespace QA_lesson_1
         [Test]
         public void FirstTest()
         {
-            driver.Url = "http://www.google.com/";
-            driver.FindElement(By.Name("q")).SendKeys("webdriver" + Keys.Enter);
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("login_test");
+            driver.FindElement(By.Name("password")).SendKeys("password_test");
+            driver.FindElement(By.Name("login")).Click();
+
         }
 
         [TearDown]
