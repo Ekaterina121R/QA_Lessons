@@ -1,10 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using NUnit.Framework;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace QA_lesson_1
 {
@@ -17,15 +18,58 @@ namespace QA_lesson_1
         [SetUp]
         public void start()
         {
-            driver = new InternetExplorerDriver();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            driver = new ChromeDriver();
         }
 
         [Test]
-        public void FirstTest()
+
+        public void Geozones()
         {
-            driver.Url = "http://www.google.com/";
-            driver.FindElement(By.Name("q")).SendKeys("webdriver" + Keys.Enter);
+            // Заходим на сайт
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("admin");
+            driver.FindElement(By.Name("password")).SendKeys("admin");
+            driver.FindElement(By.Name("login")).Click();
+            Thread.Sleep(400);
+
+            driver.Url = "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones";
+
+            var Rows = driver.FindElements(By.XPath("//tr[@class='row']/td[3]/a"));
+            List<string> Links = new List<string>();
+
+            for (int i = 0; i < Rows.Count(); i++)
+            {
+                var row = Rows[i];
+                Links.Add(row.GetAttribute("href"));
+            }
+
+
+            // Проверяем сортировку в зонах
+            foreach (string link in Links)
+            {
+                driver.Url = link;
+
+                var Names = driver.FindElements(By.XPath("//table[@class='dataTable']/tbody/tr/td[3]/select/option[@selected='selected']"));
+                List<string> ZoneNames = new List<string>();
+
+                foreach (IWebElement name in Names)
+                {
+                    if (name.GetAttribute("textContent") != "")
+                    {
+                        ZoneNames.Add(name.GetAttribute("textContent"));
+                    }
+                }
+
+                List<string> ZoneNamesSorted = new List<string>(ZoneNames);
+                ZoneNamesSorted.Sort();
+
+                if (ZoneNames.SequenceEqual(ZoneNamesSorted)) Console.WriteLine("Zones are sorted correctly");
+                else Console.WriteLine("Zones are not sorted correctly");
+
+
+            }
+
+
         }
 
         [TearDown]
