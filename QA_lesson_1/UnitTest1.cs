@@ -33,7 +33,7 @@ namespace QA_lesson_1
 
 
             var elements = driver.FindElement(Popular);
-            var PopEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+            var PopEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li.product"));
 
             for (int i = 0; i < PopEl.Count(); i++)
             {
@@ -43,7 +43,7 @@ namespace QA_lesson_1
             }
 
             elements = driver.FindElement(Campaigns);
-            var CampEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+            var CampEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li.product"));
 
             for (int i = 0; i < CampEl.Count(); i++)
             {
@@ -53,7 +53,7 @@ namespace QA_lesson_1
             }
 
             elements = driver.FindElement(Latest);
-            var LatestEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+            var LatestEl = elements.FindElement(By.TagName("ul")).FindElements(By.TagName("li.product"));
 
             for (int i = 0; i < LatestEl.Count(); i++)
             {
