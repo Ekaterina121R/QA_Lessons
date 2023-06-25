@@ -1,15 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using NUnit.Framework;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace QA_lesson_1
+namespace Selenium_Tests
 {
-    [TestFixture]
-    public class MyFirstTest
+    internal class Litecart_cart
     {
         private IWebDriver driver;
         private WebDriverWait wait;
@@ -17,16 +18,62 @@ namespace QA_lesson_1
         [SetUp]
         public void start()
         {
-            driver = new InternetExplorerDriver();
+            driver = new ChromeDriver();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         [Test]
-        public void FirstTest()
+
+        public void Cart()
         {
-            driver.Url = "http://www.google.com/";
-            driver.FindElement(By.Name("q")).SendKeys("webdriver" + Keys.Enter);
+
+            driver.Url = "http://localhost/litecart/";
+
+            // Добавляем товары
+            for (int i = 0; i < 3; i++)
+            {
+                driver.FindElement(By.XPath($"//ul[@class='listing-wrapper products']/li[{i + 1}]/a[1]")).Click();
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("duck"));
+
+                var quanity = (Int32.Parse(driver.FindElement(By.XPath("//span[@class='quantity']")).GetAttribute("textContent")) + 1).ToString();
+                try
+                {
+                    SelectElement statusSelect = new SelectElement(driver.FindElement(By.XPath("//select[@name='options[Size]']")));
+                    statusSelect.SelectByValue("Small");
+                }
+                catch (NoSuchElementException)
+                { }
+
+
+                driver.FindElement(By.XPath("//button[@name='add_cart_product']")).Click();
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.TextToBePresentInElement(driver.FindElement(By.XPath("//span[@class='quantity']")), quanity));
+
+                driver.Url = "http://localhost/litecart/";
+            }
+
+            // Удаляем товары
+
+            driver.FindElement(By.XPath("//div[@id='cart']/a[@class='link']")).Click();
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.UrlContains("checkout"));
+            IWebElement? element = null;
+            var cnt = driver.FindElements(By.XPath("//table[@class='dataTable rounded-corners']//td[@class='item']")).Count;
+
+            for (int j = 0; j < cnt; j++)
+            {
+                var ourItem = driver.FindElement(By.XPath("//div[@style='display: inline-block;']//a")).GetAttribute("textContent");
+                var items = driver.FindElements(By.XPath("//table[@class='dataTable rounded-corners']//td[@class='item']"));
+                foreach (var item in items)
+                {
+                    if (item.GetAttribute("textContent") == ourItem) element = item;
+                }
+                driver.FindElement(By.XPath("//button[@value='Remove']")).Click();
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.StalenessOf(element));
+            }
+
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.XPath("//em")));
+
         }
+
 
         [TearDown]
         public void stop()
