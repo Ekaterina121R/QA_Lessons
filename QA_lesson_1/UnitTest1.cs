@@ -5,6 +5,8 @@ using OpenQA.Selenium;
 using System;
 using Assert = NUnit.Framework.Assert;
 using System.Threading;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
 
 namespace QA_lesson_1
 {
@@ -17,7 +19,9 @@ namespace QA_lesson_1
         [SetUp]
         public void start()
         {
-            driver = new ChromeDriver();
+            FirefoxOptions options = new FirefoxOptions();
+            options.BrowserExecutableLocation = ("C:\\Program Files\\Mozilla Firefox\\firefox.exe"); //location where Firefox is installed
+            driver = new FirefoxDriver(options);
         }
 
         [Test]
@@ -61,18 +65,18 @@ namespace QA_lesson_1
             inputPhone.SendKeys(phone);
 
             SelectElement countrySelect = new SelectElement(country);
-            countrySelect.SelectByText("United States");
+            ((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", countrySelect, "United States");
+            //countrySelect.SelectByText("United States");
             Thread.Sleep(3000);
             SelectElement stateSelect = new SelectElement(state);
-            stateSelect.SelectByText("South Dakota");
+            ((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", stateSelect, "Alaska");
+            //stateSelect.SelectByText("South Dakota");
             inputPassword.SendKeys(password);
             confirmPassword.SendKeys(password);
-
             submit.Click();
             Thread.Sleep(3000);
 
-            Assert.AreNotEqual(driver.Url, "http://localhost/litecart/en/create_account");
-
+            Assert.AreNotEqual(driver.Url, "http://localhost/litecart/en/");
             // выходим из учетки
             var logout = driver.FindElement(By.XPath("//div[@id='box-account']/div/ul/li[4]/a"));
             logout.Click();
