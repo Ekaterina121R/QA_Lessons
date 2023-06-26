@@ -7,6 +7,8 @@ using Assert = NUnit.Framework.Assert;
 using System.Threading;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
+using System.ComponentModel;
+using SeleniumExtras.WaitHelpers;
 
 namespace QA_lesson_1
 {
@@ -64,35 +66,58 @@ namespace QA_lesson_1
             inputEmail.SendKeys(email);
             inputPhone.SendKeys(phone);
 
-            SelectElement countrySelect = new SelectElement(country);
-            ((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", countrySelect, "United States");
-            //countrySelect.SelectByText("United States");
+
+            driver.FindElement(By.ClassName("select2-selection__arrow")).Click();
+            var us = driver.FindElement(By.XPath("//li[text()='United States']"));
+            us.Click();
+
+
             Thread.Sleep(3000);
             SelectElement stateSelect = new SelectElement(state);
-            ((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", stateSelect, "Alaska");
-            //stateSelect.SelectByText("South Dakota");
+            stateSelect.SelectByText("Alaska");
             inputPassword.SendKeys(password);
             confirmPassword.SendKeys(password);
-            submit.Click();
-            Thread.Sleep(3000);
+            driver.FindElement(By.XPath("//button[@type='submit']")).Click();
 
-            Assert.AreNotEqual(driver.Url, "http://localhost/litecart/en/");
+
+            /*
+                        SelectElement countrySelect = new SelectElement(country);
+                       // ((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", countrySelect, "United States");
+                        //countrySelect.SelectByText("United States");
+                        //Thread.Sleep(3000);
+                        SelectElement stateSelect = new SelectElement(state);
+                        //((IJavaScriptExecutor)driver).ExecuteScript("var select = arguments[0]; for(var i = 0; i < select.options.length; i++){ if(select.options[i].text == arguments[1]){ select.options[i].selected = true; } }", stateSelect, "Alaska");
+                        //stateSelect.SelectByText("South Dakota");
+                        inputPassword.SendKeys(password);
+                        confirmPassword.SendKeys(password);
+                        submit.Click();
+                        Thread.Sleep(3000);
+                        driver.Url = "http://localhost/litecart/en/create_account";
+            */
+
+            /*
+            //Assert.AreNotEqual(driver.Url, "http://localhost/litecart/en/create_account");
             // выходим из учетки
-            var logout = driver.FindElement(By.XPath("//div[@id='box-account']/div/ul/li[4]/a"));
+            var logout = driver.FindElement(By.XPath("//a[text()='Logout']"));
             logout.Click();
             Thread.Sleep(3000);
-
+             */
+            // driver.Url = "http://localhost/litecart/en/create_account";
+            // driver.FindElement(By.XPath("//div[@id='box-account']/div/ul/li[4]/a")).Click();
             // заходим в учетку
+
+            driver.FindElement(By.XPath("//a[text()='Logout']")).Click();
             driver.FindElement(By.XPath("//input[@name='email']")).SendKeys(email);
             driver.FindElement(By.XPath("//input[@name='password']")).SendKeys(password);
             driver.FindElement(By.XPath("//button[@name='login']")).Click();
             Thread.Sleep(3000);
 
             // выходим из учетки
-            logout = driver.FindElement(By.XPath("//div[@id='box-account']/div/ul/li[4]/a"));
-            logout.Click();
-            Thread.Sleep(3000);
-
+            driver.FindElement(By.XPath("//a[text()='Logout']")).Click();
+            //logout = driver.FindElement(By.XPath("//a[text()='Logout']"));
+           // logout.Click();
+            //Thread.Sleep(3000);
+           
 
         }
 
